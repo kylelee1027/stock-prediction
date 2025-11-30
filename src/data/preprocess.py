@@ -1,9 +1,8 @@
 import pandas as pd
-from src.utils.paths import SPY_2024_PRESENT
+from src.utils.paths import SPY_2024_PRESENT, SPY_DIR
 
-df = pd.read_csv(SPY_2024_PRESENT, header=[0,1], skiprows=[2])
-df = df.rename(columns={df.columns[0]: "Date"})
-print(df)
-df["Date"] = pd.to_datetime(df["Date"])
-df.columns = [col[0] if isinstance(col, tuple) else col for col in df.columns]
-print(df.columns)
+df = pd.read_csv(SPY_2024_PRESENT, parse_dates=["Date"])
+df = df.sort_values("Date")
+df = df.drop_duplicates(subset=["Date"])
+df = df.ffill()
+df.to_csv(SPY_DIR/"cleaned/spy_clean.csv")
